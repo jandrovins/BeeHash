@@ -2,10 +2,15 @@ SRC=src
 INCLUDE=src/include
 BIN=bin
 OBJ=$(BIN)/obj
-CXXFLAGS=--std=c++11 -O3 -Wall -Wextra -Werror
+CXXFLAGS=
 CXX=g++
 
-$(BIN)/BeeTree: $(OBJ)/main.o $(OBJ)/octree.o $(OBJ)/balltree.o$(OBJ)/spatialhashing.o
+all: $(BIN)/BeeTree $(BIN)/spatialhashing
+
+$(BIN)/BeeTree: $(OBJ)/main.o $(OBJ)/octree.o $(OBJ)/balltree.o #$(OBJ)/spatialhashing.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(BIN)/spatialhashing: $(SRC)/spatialhashing.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJ)/main.o: $(SRC)/main.cpp
@@ -20,7 +25,7 @@ $(OBJ)/octree.o: $(SRC)/octree.cpp $(INCLUDE)/octree.h
 	mkdir -p $(OBJ)
 	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
 
-$(OBJ)/spatialhashing.o: $(SRC)/spatialhashing.cpp $(INCLUDE)/spatialhashing.h
+$(OBJ)/spatialhashing.o: $(SRC)/spatialhashing.cpp
 	mkdir -p $(OBJ)
 	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
 
