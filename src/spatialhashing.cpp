@@ -69,26 +69,27 @@ int find_cube_key(Cube* c)
 boost::unordered_map<int, std::pair<Cube*, bool>> parse_file(std::string input_file, std::vector<int>& v)
 {
     boost::unordered_map<int, std::pair<Cube*, bool>> um;
-    std::ifstream input(input_file);
+    std::ifstream inpp(input_file);
     std::string line;
-    std::getline(input, line);
-    std::cout << line;
-    while (std::getline(input, line)) {
-        std::vector<std::string> string_coordinates;
-        std::cout << line;
-        boost::split(string_coordinates, line, boost::is_any_of(","));
-        Cube* c = new Cube(std::stoi(string_coordinates[0]), std::stoi(string_coordinates[1]), std::stoi(string_coordinates[2]));
-        int key = find_cube_key(c);
-        if ((um[key].first) != nullptr) {
-            um[key] = std::make_pair(c, false);
-            v.push_back(key);
-        } else {
-            um[key].second = true;
-            um[key].first->previous = c;
-            c->following = um[key].first;
-            um[key].first = c;
+    std::getline(inpp, line);
+    if (inpp.is_open()) {
+        while (std::getline(inpp, line)) {
+            std::vector<std::string> string_coordinates;
+            boost::split(string_coordinates, line, boost::is_any_of(","));
+            Cube* c = new Cube(std::stoi(string_coordinates[0]), std::stoi(string_coordinates[1]), std::stoi(string_coordinates[2]));
+            int key = find_cube_key(c);
+            if ((um[key].first) == nullptr) {
+                um[key] = std::make_pair(c, false);
+                v.push_back(key);
+            } else {
+                um[key].second = true;
+                um[key].first->previous = c;
+                c->following = um[key].first;
+                um[key].first = c;
+            }
         }
     }
+    inpp.close();
     return um;
 }
 
@@ -100,8 +101,7 @@ int main()
     std::vector<int> keys;
 
     // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon10abejas.txt";
-
+    std::string inFileName = "ConjuntoDeDatosCon1000abejas.txt";
     boost::unordered_map<int, std::pair<Cube*, bool>> cubes = parse_file(inFileName, keys);
 
     for (int i : keys) {
