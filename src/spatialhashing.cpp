@@ -92,7 +92,7 @@ int main()
         Bee* tony = p.first;
         if (p.second == true) {
             do {
-                // s << tony->x << "," << tony->y << "," << tony->z << std::endl;
+                //s << tony->x << "," << tony->y << "," << tony->z << std::endl;
                 tony = tony->following;
             } while (tony->following != nullptr);
         } else {
