@@ -71,7 +71,55 @@ boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string 
     return um;
 }
 
+void find_adjacent_keys(int x, int y, int z, std::vector<std::string>& v)
+{
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
 
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z - 1));
+
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z));
+    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
+}
+
+void find_for_unique_bee(std::string key, int x, int y, int z)
+{
+    std::vector<std::string> xyz_from_key;
+    boost::split(xyz_from_key, key, boost::is_any_of(" "));
+    int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
+    std::vector<std::string> keys;
+    find_adjacent_keys(x, y, z, keys);
+    for(std::string key:keys){
+    
+    }
+}
 
 int main()
 {
@@ -85,10 +133,8 @@ int main()
     boost::unordered_map<std::string, std::pair<Bee*, bool>> cubes = parse_file(inFileName, keys);
     std::stringstream s;
 
-    std::vector<std::string> xyz_from_key;
-
-    for (std::string i : keys) {
-        std::pair<Bee*, bool> p = cubes[i];
+    for (std::string key : keys) {
+        std::pair<Bee*, bool> p = cubes[key];
         Bee* tony = p.first;
         if (p.second == true) {
             do {
@@ -96,8 +142,6 @@ int main()
                 tony = tony->following;
             } while (tony->following != nullptr);
         } else {
-            boost::split(xyz_from_key, i, boost::is_any_of(" "));
-
         }
     }
     std::cout << s.str();
