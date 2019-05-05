@@ -1,5 +1,7 @@
+#include <bits/stdc++.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -9,11 +11,11 @@
 
 class Bee {
 public:
-    float x, y, z;
+    double x, y, z;
     Bee* previous = nullptr;
     Bee* following = nullptr;
 
-    Bee(float x1, float y1, float z1)
+    Bee(double x1, double y1, double z1)
     {
         x = x1 * 111111;
         y = y1 * 111111;
@@ -38,10 +40,10 @@ public:
     }
 };
 
-std::string find_cube_key(float x, float y, float z)
+std::string find_cube_key(double x, double y, double z)
 {
     // round each coordinate, concatenate them into a string and convert this string to an integer
-    return std::to_string((int)std::round(x / 57.735026919d)) + " " + std::to_string((int)std::round(y / 57.735026919d)) + " " + std::to_string((int)std::round(z / 57.735026919d));
+    return std::to_string((int)std::round(x / 57.735026919)) + " " + std::to_string((int)std::round(y / 57.735026919)) + " " + std::to_string((int)std::round(z / 57.735026919));
 }
 
 boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string input_file, std::vector<std::string>& v)
@@ -54,7 +56,7 @@ boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string 
         while (std::getline(inpp, line)) {
             std::vector<std::string> string_coordinates;
             boost::split(string_coordinates, line, boost::is_any_of(","));
-            Bee* c = new Bee(std::stof(string_coordinates[0]), std::stof(string_coordinates[1]), std::stof(string_coordinates[2]));
+            Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
             std::string key = find_cube_key(c->x, c->y, c->z);
             if ((um[key].first) == nullptr) {
                 um[key] = std::make_pair(c, false);
@@ -71,78 +73,124 @@ boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string 
     return um;
 }
 
-void find_adjacent_keys(int x, int y, int z, std::vector<std::string>& v)
+inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, std::pair<Bee*, bool>>& cubes)
 {
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x + 1) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y + 1) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y) + " " + std::to_string(z - 1));
-
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z + 1));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z));
-    v.push_back(std::to_string(x - 1) + " " + std::to_string(y - 1) + " " + std::to_string(z - 1));
-}
-
-void find_for_unique_bee(std::string key, int x, int y, int z)
-{
+    double x = cubes[unique_bee_key].first->x, y = cubes[unique_bee_key].first->y, z = cubes[unique_bee_key].first->z;
+    std::stringstream result;
     std::vector<std::string> xyz_from_key;
-    boost::split(xyz_from_key, key, boost::is_any_of(" "));
+    boost::split(xyz_from_key, unique_bee_key, boost::is_any_of(" "));
     int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
+
     std::vector<std::string> keys;
-    find_adjacent_keys(x, y, z, keys);
-    for(std::string key:keys){
-    
+    keys.reserve(26);
+
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
+    xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+
+    Bee* current_bee;
+    for (std::string key : keys) {
+        if (cubes[key].first != nullptr) {
+            current_bee = cubes[key].first;
+            double x_distance, y_distance, z_distance;
+            //  int cont =0;
+            do {
+                x_distance = x - current_bee->x;
+                y_distance = y - current_bee->y;
+                z_distance = z - current_bee->z;
+                //    ++cont;
+                //    std::cout<<cont<<std::endl;
+                if (x_distance >= -100 && x_distance <= 100) {
+                    if (y_distance >= -100 && y_distance <= 100) {
+                        if (z_distance >= -100 && z_distance <= 100) {
+                            if (cubes[key].second == true) {
+                                //result << x << "," << y << "," << z << std::endl;
+                                cubes[unique_bee_key].second = true;
+                                return; //result.str();
+                            } else {
+                                // result << current_bee->x << "," << current_bee->y << "," << current_bee->z << std::endl;
+                                //result << x << "," << y << "," << z << std::endl;
+                                cubes[key].second = true;
+                                cubes[unique_bee_key].second = true;
+                                return; //result.str();
+                            }
+                        }
+                    }
+                }
+            } while (current_bee->following != nullptr);
+        }
     }
+    //return result.str();
 }
+
+Bee* tony;
+double x, y, z;
 
 int main()
 {
     // map trepresent cubes
+    boost::unordered_map<std::string, std::pair<Bee*, bool>> cubes;
 
     // vector to store keys and int representing how many bees are in each cube
     std::vector<std::string> keys;
 
     // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon1000abejas.txt";
-    boost::unordered_map<std::string, std::pair<Bee*, bool>> cubes = parse_file(inFileName, keys);
+    std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
     std::stringstream s;
 
+    auto st = std::chrono::high_resolution_clock::now();
+    clock_t start, end;
+    start = std::clock();
     for (std::string key : keys) {
         std::pair<Bee*, bool> p = cubes[key];
-        Bee* tony = p.first;
+        tony = p.first;
         if (p.second == true) {
-            do {
-                //s << tony->x << "," << tony->y << "," << tony->z << std::endl;
-                tony = tony->following;
-            } while (tony->following != nullptr);
+            // while (tony->following != nullptr) {
+            //     s << tony->x << "," << tony->y << "," << tony->z << std::endl;
+            //     tony = tony->following;
+            // }
         } else {
+            find_for_unique_bee(key, cubes);
         }
     }
-    std::cout << s.str();
+    end = std::clock();
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - st);
+
+    std::cout << duration.count() << std::endl;
+    //std::cout << s.str();
+    double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+    s << time_taken;
+    std::cout << s.str() << std::endl;
 }

@@ -2,7 +2,7 @@ SRC=src
 INCLUDE=src/include
 BIN=bin
 OBJ=$(BIN)/obj
-CXXFLAGS=
+CXXFLAGS=-O3
 CXX=g++
 
 all: $(BIN)/BeeTree $(BIN)/spatialhashing
