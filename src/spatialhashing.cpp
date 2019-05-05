@@ -46,9 +46,8 @@ std::string find_cube_key(double x, double y, double z)
     return std::to_string((int)std::round(x / 57.735026919)) + " " + std::to_string((int)std::round(y / 57.735026919)) + " " + std::to_string((int)std::round(z / 57.735026919));
 }
 
-boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string input_file, std::vector<std::string>& v)
+void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, std::pair<Bee*, bool>>& um)
 {
-    boost::unordered_map<std::string, std::pair<Bee*, bool>> um;
     std::ifstream inpp(input_file);
     std::string line;
     std::getline(inpp, line);
@@ -70,7 +69,6 @@ boost::unordered_map<std::string, std::pair<Bee*, bool>> parse_file(std::string 
         }
     }
     inpp.close();
-    return um;
 }
 
 inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, std::pair<Bee*, bool>>& cubes)
@@ -130,17 +128,17 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
                 y_distance = y - current_bee->y;
                 z_distance = z - current_bee->z;
                 //    ++cont;
-                //    std::cout<<cont<<std::endl;
+                //    std::cout<<cont<<"\n";
                 if (x_distance >= -100 && x_distance <= 100) {
                     if (y_distance >= -100 && y_distance <= 100) {
                         if (z_distance >= -100 && z_distance <= 100) {
                             if (cubes[key].second == true) {
-                                //result << x << "," << y << "," << z << std::endl;
+                                //result << x << "," << y << "," << z << "\n";
                                 cubes[unique_bee_key].second = true;
                                 return; //result.str();
                             } else {
-                                // result << current_bee->x << "," << current_bee->y << "," << current_bee->z << std::endl;
-                                //result << x << "," << y << "," << z << std::endl;
+                                // result << current_bee->x << "," << current_bee->y << "," << current_bee->z << "\n";
+                                //result << x << "," << y << "," << z << "\n";
                                 cubes[key].second = true;
                                 cubes[unique_bee_key].second = true;
                                 return; //result.str();
@@ -169,6 +167,8 @@ int main()
     std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
     std::stringstream s;
 
+    parse_file(inFileName, keys, cubes);
+
     auto st = std::chrono::high_resolution_clock::now();
     clock_t start, end;
     start = std::clock();
@@ -176,21 +176,21 @@ int main()
         std::pair<Bee*, bool> p = cubes[key];
         tony = p.first;
         if (p.second == true) {
-            // while (tony->following != nullptr) {
-            //     s << tony->x << "," << tony->y << "," << tony->z << std::endl;
-            //     tony = tony->following;
-            // }
+            while (tony->following != nullptr) {
+               // s << tony->x << "," << tony->y << "," << tony->z << "\n";
+                tony = tony->following;
+            }
         } else {
             find_for_unique_bee(key, cubes);
         }
     }
     end = std::clock();
     auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - st);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - st);
 
-    std::cout << duration.count() << std::endl;
+    std::cout <<"CHRONO: " << duration.count() << "\n";
     //std::cout << s.str();
     double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-    s << time_taken;
-    std::cout << s.str() << std::endl;
+    std::cout <<"CLOCK: " << time_taken << "\n";
+    //std::cout << s.str() << "\n";
 }
