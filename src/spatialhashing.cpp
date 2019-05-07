@@ -169,6 +169,7 @@ int main()
 
     parse_file(inFileName, keys, cubes);
 
+    std::cout<<keys.size();
     auto st = std::chrono::high_resolution_clock::now();
     clock_t start, end;
     start = std::clock();
