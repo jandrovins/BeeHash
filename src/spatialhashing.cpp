@@ -46,26 +46,27 @@ std::string find_cube_key(double x, double y, double z)
     return std::to_string((int)std::round(x / 57.735026919)) + " " + std::to_string((int)std::round(y / 57.735026919)) + " " + std::to_string((int)std::round(z / 57.735026919));
 }
 
+std::ostringstream s;
 void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, std::pair<Bee*, bool>>& um)
 {
     std::ifstream inpp(input_file);
+    std::stringstream iss;
+    iss << inpp.rdbuf();
     std::string line;
-    std::getline(inpp, line);
-    if (inpp.is_open()) {
-        while (std::getline(inpp, line)) {
-            std::vector<std::string> string_coordinates;
-            boost::split(string_coordinates, line, boost::is_any_of(","));
-            Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
-            std::string key = find_cube_key(c->x, c->y, c->z);
-            if ((um[key].first) == nullptr) {
-                um[key] = std::make_pair(c, false);
-                v.push_back(key);
-            } else {
-                um[key].second = true;
-                um[key].first->previous = c;
-                c->following = um[key].first;
-                um[key].first = c;
-            }
+    std::getline(iss, line);
+    while (std::getline(iss, line)) {
+        std::vector<std::string> string_coordinates;
+        boost::split(string_coordinates, line, boost::is_any_of(","));
+        Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
+        std::string key = find_cube_key(c->x, c->y, c->z);
+        if ((um[key].first) == nullptr) {
+            um[key] = std::make_pair(c, false);
+            v.push_back(key);
+        } else {
+            um[key].second = true;
+            um[key].first->previous = c;
+            c->following = um[key].first;
+            um[key].first = c;
         }
     }
     inpp.close();
@@ -122,23 +123,20 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
         if (cubes[key].first != nullptr) {
             current_bee = cubes[key].first;
             double x_distance, y_distance, z_distance;
-            //  int cont =0;
             do {
                 x_distance = x - current_bee->x;
                 y_distance = y - current_bee->y;
                 z_distance = z - current_bee->z;
-                //    ++cont;
-                //    std::cout<<cont<<"\n";
                 if (x_distance >= -100 && x_distance <= 100) {
                     if (y_distance >= -100 && y_distance <= 100) {
                         if (z_distance >= -100 && z_distance <= 100) {
                             if (cubes[key].second == true) {
-                                //result << x << "," << y << "," << z << "\n";
+                                result << x << "," << y << "," << z << "\n";
                                 cubes[unique_bee_key].second = true;
                                 return; //result.str();
                             } else {
-                                // result << current_bee->x << "," << current_bee->y << "," << current_bee->z << "\n";
-                                //result << x << "," << y << "," << z << "\n";
+                                result << current_bee->x << "," << current_bee->y << "," << current_bee->z << "\n";
+                                result << x << "," << y << "," << z << "\n";
                                 cubes[key].second = true;
                                 cubes[unique_bee_key].second = true;
                                 return; //result.str();
@@ -165,11 +163,10 @@ int main()
 
     // string storing name of file that will be parsed
     std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
-    std::stringstream s;
 
     parse_file(inFileName, keys, cubes);
 
-    std::cout<<keys.size();
+    std::cout << keys.size();
     auto st = std::chrono::high_resolution_clock::now();
     clock_t start, end;
     start = std::clock();
@@ -178,7 +175,7 @@ int main()
         tony = p.first;
         if (p.second == true) {
             while (tony->following != nullptr) {
-               // s << tony->x << "," << tony->y << "," << tony->z << "\n";
+                s << tony->x << "," << tony->y << "," << tony->z << "\n";
                 tony = tony->following;
             }
         } else {
@@ -189,9 +186,11 @@ int main()
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - st);
 
-    std::cout <<"CHRONO: " << duration.count() << "\n";
+    std::cout << "CHRONO: " << duration.count() << "\n";
     //std::cout << s.str();
     double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-    std::cout <<"CLOCK: " << time_taken << "\n";
+    std::cout << "CLOCK: " << time_taken << "\n";
     //std::cout << s.str() << "\n";
+    std::ofstream outpp("colisiones.txt");
+    outpp << s.str();
 }
