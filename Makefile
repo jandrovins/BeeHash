@@ -2,7 +2,7 @@ SRC=src
 INCLUDE=src/include
 BIN=bin
 OBJ=$(BIN)/obj
-CXXFLAGS=-fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-default-inline -fno-inline -O2 -g
+CXXFLAGS= -O2 -g
 CXX=g++
 
 all: $(BIN)/BeeTree $(BIN)/spatialhashing

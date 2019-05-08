@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
 #include <chrono>
 #include <cmath>
@@ -28,6 +27,7 @@ public:
         y = b.y * 111111;
     };
 };
+typedef std::pair<std::vector<Bee>, bool> Pair;
 
 class Cube {
 public:
@@ -46,7 +46,25 @@ std::string find_cube_key(double x, double y, double z)
     return std::to_string((int)std::round(x / 57.735026919)) + " " + std::to_string((int)std::round(y / 57.735026919)) + " " + std::to_string((int)std::round(z / 57.735026919));
 }
 
-void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, std::pair<Bee*, bool>>& um)
+inline void split(std::string s, std::vector<std::string>& v)
+{
+    size_t idx_2 = 0, idx = 0;
+    v.push_back("");
+    v.push_back("");
+    v.push_back("");
+    for (char ch : s) {
+        if (ch == '\n')
+            return;
+        if (ch == ',') {
+            ++idx_2;
+            continue;
+        }
+        v[idx_2] += ch;
+    }
+}
+
+std::ostringstream s;
+inline void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, Pair>& um)
 {
     std::ifstream inpp(input_file);
     std::string line;
@@ -54,10 +72,10 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
     if (inpp.is_open()) {
         while (std::getline(inpp, line)) {
             std::vector<std::string> string_coordinates;
-            boost::split(string_coordinates, line, boost::is_any_of(","));
+            split(line, string_coordinates);
             Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
             std::string key = find_cube_key(c->x, c->y, c->z);
-            if ((um[key].first) == nullptr) {
+            if ((um[key].first.size()) == 0) {
                 um[key] = std::make_pair(c, false);
                 v.push_back(key);
             } else {
@@ -66,21 +84,36 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
                 c->following = um[key].first;
                 um[key].first = c;
             }
+    std::getline(iss, line);
+    while (std::getline(iss, line)) {
+        std::vector<std::string> string_coordinates;
+        string_coordinates.reserve(4);
+        split(line, string_coordinates);
+        Bee c = Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
+        std::string key = find_cube_key(c->x, c->y, c->z);
+        if ((um[key].first.size()) == 0) {
+            um[key].first.push_back(c);
+            um[key].second = false;
+            v.push_back(key);
+        } else {
+            um[key].second = true;
+            um[key].first.push_back(c);
         }
     }
     inpp.close();
 }
 
-inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, std::pair<Bee*, bool>>& cubes)
+inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, Pair>& cubes)
 {
-    double x = cubes[unique_bee_key].first->x, y = cubes[unique_bee_key].first->y, z = cubes[unique_bee_key].first->z;
+    double x = cubes[unique_bee_key].first[0].x, y = cubes[unique_bee_key].first[0].y, z = cubes[unique_bee_key].first[0].z;
     std::stringstream result;
     std::vector<std::string> xyz_from_key;
-    boost::split(xyz_from_key, unique_bee_key, boost::is_any_of(" "));
+    xyz_from_key.reserve(4);
+    split(unique_bee_key, xyz_from_key);
     int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
 
     std::vector<std::string> keys;
-    keys.reserve(26);
+    keys.reserve(32);
 
     xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
     xyz_from_key.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
@@ -117,10 +150,11 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
     xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
     xyz_from_key.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
 
-    Bee* current_bee;
+    Bee current_bee;
     for (std::string key : keys) {
-        if (cubes[key].first != nullptr) {
-            current_bee = cubes[key].first;
+        if (cubes[key].first.size() == 0) {
+            idx= 0;
+            current_bee = cubes[key].first[idx_bee];
             double x_distance, y_distance, z_distance;
             //  int cont =0;
             do {
@@ -152,13 +186,14 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
     //return result.str();
 }
 
-Bee* tony;
+Bee* t;
+Bee tony;
 double x, y, z;
 
 int main()
 {
     // map trepresent cubes
-    boost::unordered_map<std::string, std::pair<Bee*, bool>> cubes;
+    boost::unordered_map<std::string, Pair> cubes;
 
     // vector to store keys and int representing how many bees are in each cube
     std::vector<std::string> keys;
@@ -174,12 +209,17 @@ int main()
     clock_t start, end;
     start = std::clock();
     for (std::string key : keys) {
-        std::pair<Bee*, bool> p = cubes[key];
-        tony = p.first;
+        Pair p = cubes[key];
+        t = p.first;
         if (p.second == true) {
+<<<<<<< Updated upstream
             while (tony->following != nullptr) {
                // s << tony->x << "," << tony->y << "," << tony->z << "\n";
                 tony = tony->following;
+=======
+            for(Bee tony:t){
+                s << tony->x << "," << tony->y << "," << tony->z << "\n";
+>>>>>>> Stashed changes
             }
         } else {
             find_for_unique_bee(key, cubes);
