@@ -172,12 +172,15 @@ int main()
     auto st = std::chrono::high_resolution_clock::now();
     clock_t start, end;
     start = std::clock();
-    for (std::string key : keys) {
+    std::string key;
+#pragma omp parallel for private(key,p,tony)
+    for (int i = 0; i < keys.size(); i++) {
+        key = keys[i];
         std::pair<Bee*, bool> p = cubes[key];
         tony = p.first;
         if (p.second == true) {
             while (tony->following != nullptr) {
-               // s << tony->x << "," << tony->y << "," << tony->z << "\n";
+                // s << tony->x << "," << tony->y << "," << tony->z << "\n";
                 tony = tony->following;
             }
         } else {
@@ -188,9 +191,9 @@ int main()
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - st);
 
-    std::cout <<"CHRONO: " << duration.count() << "\n";
+    std::cout << "CHRONO: " << duration.count() << "\n";
     //std::cout << s.str();
     double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-    std::cout <<"CLOCK: " << time_taken << "\n";
+    std::cout << "CLOCK: " << time_taken << "\n";
     //std::cout << s.str() << "\n";
 }
