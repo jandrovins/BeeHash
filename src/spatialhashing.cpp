@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
 #include <chrono>
@@ -46,7 +45,7 @@ std::string find_cube_key(double x, double y, double z)
     return std::to_string((int)std::round(x / 57.735026919)) + " " + std::to_string((int)std::round(y / 57.735026919)) + " " + std::to_string((int)std::round(z / 57.735026919));
 }
 
-void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, std::pair<Bee*, bool>>& um)
+void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, std::pair<Bee*, bool> >& um)
 {
     std::ifstream inpp(input_file);
     std::string line;
@@ -54,13 +53,20 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
     if (inpp.is_open()) {
         while (std::getline(inpp, line)) {
             std::vector<std::string> string_coordinates;
+            //The data from the file is split and stored in the previously declared vector.
             boost::split(string_coordinates, line, boost::is_any_of(","));
+            //A new bee is created using the extracted coordinates.
             Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
+            //The coordinates assigned to the generated bee are used to generate a key in order to store said bee in the unordered map.
             std::string key = find_cube_key(c->x, c->y, c->z);
+            //Check if the unordered map is free in said key
             if ((um[key].first) == nullptr) {
+                //Inserts the new bee together with a false boolean value onto the unordered map.
                 um[key] = std::make_pair(c, false);
+                //The value of the key is stored int the last position of the parameter vector.
                 v.push_back(key);
             } else {
+                //Sets boolean flag to true.
                 um[key].second = true;
                 um[key].first->previous = c;
                 c->following = um[key].first;
@@ -71,14 +77,13 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
     inpp.close();
 }
 
-inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, std::pair<Bee*, bool>>& cubes)
+void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, std::pair<Bee*, bool> >& cubes)
 {
     double x = cubes[unique_bee_key].first->x, y = cubes[unique_bee_key].first->y, z = cubes[unique_bee_key].first->z;
     std::stringstream result;
     std::vector<std::string> xyz_from_key;
     boost::split(xyz_from_key, unique_bee_key, boost::is_any_of(" "));
     int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
-
     std::vector<std::string> keys;
     keys.reserve(26);
 
@@ -157,16 +162,14 @@ double x, y, z;
 
 int main()
 {
-    // map trepresent cubes
-    boost::unordered_map<std::string, std::pair<Bee*, bool>> cubes;
+    // map to represent cubes
+    boost::unordered_map<std::string, std::pair<Bee*, bool> > cubes;
 
     // vector to store keys and int representing how many bees are in each cube
     std::vector<std::string> keys;
 
-    // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
-    std::stringstream s;
-
+    std::string inFileName = "Conjun
+   
     parse_file(inFileName, keys, cubes);
 
     auto st = std::chrono::high_resolution_clock::now();
