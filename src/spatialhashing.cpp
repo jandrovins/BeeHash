@@ -29,7 +29,26 @@ public:
     };
 };
 
-typedef std::pair<Bee*, bool> Pair;
+class BeeList {
+public:
+    Bee* first = nullptr;
+    Bee* last = nullptr;
+
+    void concatenate_beelist_end(BeeList* bl)
+    {
+        if(first == nullptr){
+            first = bl->first;
+            last = bl->last;
+            return;
+        }
+        bl->first->previous = last;
+        last->following = bl->first;
+        last = bl->last;
+    }
+};
+
+typedef std::pair<BeeList, bool> Pair;
+BeeList resultant_blist;
 
 class Cube {
 public:
@@ -62,15 +81,16 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
             Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
             std::string key = find_cube_key(c->x, c->y, c->z);
             p = &um[key];
-            if ((p->first) == nullptr) {
-                p->first = c;
+            if ((p->first.first) == nullptr) {
+                p->first.first = c;
+                p->first.last = c;
                 p->second = false;
                 v.push_back(key);
             } else {
                 p->second = true;
-                p->first->previous = c;
-                c->following = p->first;
-                p->first = c;
+                p->first.first->previous = c;
+                c->following = p->first.first;
+                p->first.first = c;
             }
         }
     }
@@ -79,76 +99,75 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
 
 inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, Pair>& cubes)
 {
-    double x = cubes[unique_bee_key].first->x, y = cubes[unique_bee_key].first->y, z = cubes[unique_bee_key].first->z;
-    std::stringstream result;
+    Bee* unique_bee = cubes[unique_bee_key].first.first;
+    double x = unique_bee->x, y = unique_bee->y, z = unique_bee->z;
     std::vector<std::string> xyz_from_key;
     boost::split(xyz_from_key, unique_bee_key, boost::is_any_of(" "));
     int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
 
     std::vector<std::string> keys;
-    keys.reserve(26);
+    keys.reserve(32);
 
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx + 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx + 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
 
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx + 1));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx));
-    keys.push_back(std::to_string(x_idx - 1) + " " + std::to_string(y_idx - 1) + " " + std::to_string(z_idx - 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
+    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
 
     Bee* current_bee;
     Pair* p;
+    BeeList* blist;
     for (int i = 0; i < 26; ++i) {
         p = &cubes[keys[i]];
-        if (p->first != nullptr) {
-            current_bee = p->first;
+        blist = &p->first;
+        if (blist->first != nullptr) {
+            current_bee = blist->first;
             double x_distance, y_distance, z_distance;
-            //  int cont =0;
             do {
                 x_distance = x - current_bee->x;
-                //    ++cont;
-                //    std::cout<<cont<<"\n";
                 if (x_distance >= -100 && x_distance <= 100) {
                     y_distance = y - current_bee->y;
                     if (y_distance >= -100 && y_distance <= 100) {
                         z_distance = z - current_bee->z;
                         if (z_distance >= -100 && z_distance <= 100) {
                             if (p->second == true) {
-                                //result << x << "," << y << "," << z << "\n";
                                 cubes[unique_bee_key].second = true;
+                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
                                 return; //result.str();
                             } else {
-                                // result << current_bee->x << "," << current_bee->y << "," << current_bee->z << "\n";
-                                //result << x << "," << y << "," << z << "\n";
                                 p->second = true;
                                 cubes[unique_bee_key].second = true;
+                                resultant_blist.concatenate_beelist_end(blist);
+                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
                                 return; //result.str();
                             }
                         }
@@ -157,10 +176,9 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
             } while (current_bee->following != nullptr);
         }
     }
-    //return result.str();
 }
 
-Bee* tony;
+BeeList* tony;
 double x, y, z;
 
 int main()
@@ -173,8 +191,7 @@ int main()
     keys.reserve(500000);
 
     // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
-    std::stringstream s;
+    std::string inFileName = "ConjuntoDeDatosCon1500000abejas.txt";
 
     parse_file(inFileName, keys, cubes);
 
@@ -182,16 +199,14 @@ int main()
     clock_t start, end;
     start = std::clock();
     std::string key;
-    Pair *p;
+    Pair* p;
+    //#pragma omp parallel for private(key, p, tony)
     for (int i = 0; i < keys.size(); i++) {
         key = keys[i];
         p = &cubes[key];
-        tony = p->first;
+        tony = &p->first;
         if (p->second == true) {
-            while (tony->following != nullptr) {
-                // s << tony->x << "," << tony->y << "," << tony->z << "\n";
-                tony = tony->following;
-            }
+            resultant_blist.concatenate_beelist_end(tony);
         } else {
             find_for_unique_bee(key, cubes);
         }
