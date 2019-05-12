@@ -2,32 +2,17 @@ SRC=src
 INCLUDE=src/include
 BIN=bin
 OBJ=$(BIN)/obj
-CXXFLAGS=-fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-default-inline -fno-inline -O2 -g
+CXXFLAGS= #-fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-default-inline -fno-inline -O2 -fopenmp
 CXX=g++
+TSL_LIBRARY_DIR=/home/vincent/SOURCE/robin-map/include/
 
-all: $(BIN)/BeeTree $(BIN)/spatialhashing
-
-$(BIN)/BeeTree: $(OBJ)/main.o $(OBJ)/octree.o $(OBJ)/balltree.o #$(OBJ)/spatialhashing.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
+all: $(BIN)/robin_map_spatialhashing #$(BIN)/spatialhashing
 
 $(BIN)/spatialhashing: $(SRC)/spatialhashing.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJ)/main.o: $(SRC)/main.cpp
-	mkdir -p $(OBJ)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
-
-$(OBJ)/balltree.o: $(SRC)/balltree.cpp $(INCLUDE)/balltree.h
-	mkdir -p $(OBJ)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
-
-$(OBJ)/octree.o: $(SRC)/octree.cpp $(INCLUDE)/octree.h
-	mkdir -p $(OBJ)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
-
-$(OBJ)/spatialhashing.o: $(SRC)/spatialhashing.cpp
-	mkdir -p $(OBJ)
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE) -o $@ -c $<
+$(BIN)/robin_map_spatialhashing: $(SRC)/robin_map_spatialhashing.cpp
+	$(CXX) $(CXXFLAGS) -I$(TSL_LIBRARY_DIR) -o $@ $^
 
 .PHONY: clean
 clean:
