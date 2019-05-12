@@ -24,8 +24,9 @@ public:
 
     Bee(const Bee& b)
     {
-        x = b.x * 111111;
-        y = b.y * 111111;
+        x = b.x;
+        y = b.y;
+        z = b.z;
     };
 };
 
@@ -33,10 +34,28 @@ class BeeList {
 public:
     Bee* first = nullptr;
     Bee* last = nullptr;
+    int size = 0;
+
+    void add_bee(Bee* b)
+    {
+        first->previous = b;
+        b->following = first;
+        first = b;
+        ++size;
+    }
+
+    void add_first_bee(Bee* b)
+    {
+        b->following = nullptr;
+        b->previous = nullptr;
+        first = b;
+        last = b;
+        ++size;
+    }
 
     void concatenate_beelist_end(BeeList* bl)
     {
-        if(first == nullptr){
+        if (first == nullptr) {
             first = bl->first;
             last = bl->last;
             return;
@@ -44,6 +63,7 @@ public:
         bl->first->previous = last;
         last->following = bl->first;
         last = bl->last;
+        size += bl->size;
     }
 };
 
@@ -82,15 +102,12 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
             std::string key = find_cube_key(c->x, c->y, c->z);
             p = &um[key];
             if ((p->first.first) == nullptr) {
-                p->first.first = c;
-                p->first.last = c;
+                p->first.add_first_bee(c);
                 p->second = false;
                 v.push_back(key);
             } else {
+                p->first.add_bee(c);
                 p->second = true;
-                p->first.first->previous = c;
-                c->following = p->first.first;
-                p->first.first = c;
             }
         }
     }
@@ -146,24 +163,33 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
     Bee* current_bee;
     Pair* p;
     BeeList* blist;
+    #pragma omp parallel for private(current_bee, p, blist)
     for (int i = 0; i < 26; ++i) {
         p = &cubes[keys[i]];
         blist = &p->first;
+        if (blist->size != 0)
+            //std::cout << blist->size << "\n";
         if (blist->first != nullptr) {
             current_bee = blist->first;
             double x_distance, y_distance, z_distance;
+            //std::cout << current_bee->x << " " << current_bee->y << " " << current_bee->z << "\n";
             do {
                 x_distance = x - current_bee->x;
+                //std::cout << x_distance << "<-xdistance\n";
                 if (x_distance >= -100 && x_distance <= 100) {
                     y_distance = y - current_bee->y;
+                    //std::cout << y_distance << "<-ydistance\n";
                     if (y_distance >= -100 && y_distance <= 100) {
                         z_distance = z - current_bee->z;
+                        //std::cout << z_distance << "<-zdistance\n";
                         if (z_distance >= -100 && z_distance <= 100) {
                             if (p->second == true) {
                                 cubes[unique_bee_key].second = true;
                                 resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
+                                //std::cout << "SECOND TRUEEEEEE\n";
                                 return; //result.str();
                             } else {
+                                //std::cout << "SECOND FALSEEEE\n";
                                 p->second = true;
                                 cubes[unique_bee_key].second = true;
                                 resultant_blist.concatenate_beelist_end(blist);
@@ -173,7 +199,7 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
                         }
                     }
                 }
-            } while (current_bee->following != nullptr);
+            } while (current_bee->following != nullptr && current_bee!=blist->first);
         }
     }
 }
@@ -200,7 +226,7 @@ int main()
     start = std::clock();
     std::string key;
     Pair* p;
-    //#pragma omp parallel for private(key, p, tony)
+    #pragma omp parallel for private(key, p, tony)
     for (int i = 0; i < keys.size(); i++) {
         key = keys[i];
         p = &cubes[key];
@@ -208,6 +234,7 @@ int main()
         if (p->second == true) {
             resultant_blist.concatenate_beelist_end(tony);
         } else {
+            //std::cout << "UNICASSSS\n\n\n";
             find_for_unique_bee(key, cubes);
         }
     }
