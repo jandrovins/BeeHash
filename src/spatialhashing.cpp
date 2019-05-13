@@ -88,7 +88,7 @@ std::string find_cube_key(double x, double y, double z)
     return ((((std::to_string((int)std::round(x / 57.735026919)) += " ") += std::to_string((int)std::round(y / 57.735026919))) += " ") += std::to_string((int)std::round(z / 57.735026919)));
 }
 
-void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, Pair>& um)
+inline void parse_file(std::string input_file, std::vector<std::string>& v, boost::unordered_map<std::string, Pair>& um)
 {
     std::ifstream inpp(input_file);
     std::string line;
@@ -114,7 +114,55 @@ void parse_file(std::string input_file, std::vector<std::string>& v, boost::unor
     inpp.close();
 }
 
-inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, Pair>& cubes)
+inline bool compare_adjacent(std::string adj_key, std::string unique_bee_key, boost::unordered_map<std::string, Pair>& cubes, double x, double y, double z)
+{
+
+    Bee* current_bee;
+    Pair* p;
+    BeeList* blist;
+    //#pragma omp parallel for private(current_bee, p, blist)
+    for (int i = 0; i < 26; ++i) {
+        p = &cubes[adj_key];
+        blist = &p->first;
+        if (blist->size != 0)
+            //std::cout << blist->size << "\n";
+            if (blist->first != nullptr) {
+                current_bee = blist->first;
+                double x_distance, y_distance, z_distance;
+                //std::cout << current_bee->x << " " << current_bee->y << " " << current_bee->z << "\n";
+                do {
+                    x_distance = x - current_bee->x;
+                    //std::cout << x_distance << "<-xdistance\n";
+                    if (x_distance >= -100 && x_distance <= 100) {
+                        y_distance = y - current_bee->y;
+                        //std::cout << y_distance << "<-ydistance\n";
+                        if (y_distance >= -100 && y_distance <= 100) {
+                            z_distance = z - current_bee->z;
+                            //std::cout << z_distance << "<-zdistance\n";
+                            if (z_distance >= -100 && z_distance <= 100) {
+                                if (p->second == true) {
+                                    cubes[unique_bee_key].second = true;
+                                    resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
+                                    //std::cout << "SECOND TRUEEEEEE\n";
+                                    return true; //result.str();
+                                } else {
+                                    //std::cout << "SECOND FALSEEEE\n";
+                                    p->second = true;
+                                    cubes[unique_bee_key].second = true;
+                                    resultant_blist.concatenate_beelist_end(blist);
+                                    resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
+                                    return true; //result.str();
+                                }
+                            }
+                        }
+                    }
+                } while (current_bee->following != nullptr && current_bee != blist->first);
+            }
+    }
+    return false;
+}
+
+void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::string, Pair>& cubes)
 {
     Bee* unique_bee = cubes[unique_bee_key].first.first;
     double x = unique_bee->x, y = unique_bee->y, z = unique_bee->z;
@@ -124,83 +172,93 @@ inline void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map
 
     std::vector<std::string> keys;
     keys.reserve(32);
+    keys.assign(32, "");
 
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    };
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1));
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
 
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx));
-    keys.push_back((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1));
-
-    Bee* current_bee;
-    Pair* p;
-    BeeList* blist;
-    #pragma omp parallel for private(current_bee, p, blist)
-    for (int i = 0; i < 26; ++i) {
-        p = &cubes[keys[i]];
-        blist = &p->first;
-        if (blist->size != 0)
-            //std::cout << blist->size << "\n";
-        if (blist->first != nullptr) {
-            current_bee = blist->first;
-            double x_distance, y_distance, z_distance;
-            //std::cout << current_bee->x << " " << current_bee->y << " " << current_bee->z << "\n";
-            do {
-                x_distance = x - current_bee->x;
-                //std::cout << x_distance << "<-xdistance\n";
-                if (x_distance >= -100 && x_distance <= 100) {
-                    y_distance = y - current_bee->y;
-                    //std::cout << y_distance << "<-ydistance\n";
-                    if (y_distance >= -100 && y_distance <= 100) {
-                        z_distance = z - current_bee->z;
-                        //std::cout << z_distance << "<-zdistance\n";
-                        if (z_distance >= -100 && z_distance <= 100) {
-                            if (p->second == true) {
-                                cubes[unique_bee_key].second = true;
-                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
-                                //std::cout << "SECOND TRUEEEEEE\n";
-                                return; //result.str();
-                            } else {
-                                //std::cout << "SECOND FALSEEEE\n";
-                                p->second = true;
-                                cubes[unique_bee_key].second = true;
-                                resultant_blist.concatenate_beelist_end(blist);
-                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
-                                return; //result.str();
-                            }
-                        }
-                    }
-                }
-            } while (current_bee->following != nullptr && current_bee!=blist->first);
-        }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+        return;
+    }
+    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+        return;
     }
 }
 
@@ -217,7 +275,7 @@ int main()
     keys.reserve(500000);
 
     // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon1500000abejas.txt";
+    std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
 
     parse_file(inFileName, keys, cubes);
 
@@ -226,7 +284,7 @@ int main()
     start = std::clock();
     std::string key;
     Pair* p;
-    #pragma omp parallel for private(key, p, tony)
+#pragma omp parallel for private(key, p, tony)
     for (int i = 0; i < keys.size(); i++) {
         key = keys[i];
         p = &cubes[key];
