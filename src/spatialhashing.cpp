@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <malloc.h>
 
 class Bee {
 public:
@@ -180,84 +181,84 @@ void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::s
     if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
         return;
     };
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx + 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
-        return;
-    }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
-    if(compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)),unique_bee_key,cubes,x,y,z)){
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx + 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx + 1)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
 }
@@ -267,42 +268,74 @@ double x, y, z;
 
 int main()
 {
-    // map trepresent cubes
-    boost::unordered_map<std::string, Pair> cubes;
 
-    // vector to store keys and int representing how many bees are in each cube
-    std::vector<std::string> keys;
-    keys.reserve(500000);
-
+    std::vector<std::string> files = { "ConjuntoDeDatosCon1000000abejas.txt", "ConjuntoDeDatosCon100000abejas.txt", "ConjuntoDeDatosCon150000abejas.txt", "ConjuntoDeDatosCon1500abejas.txt" };
     // string storing name of file that will be parsed
-    std::string inFileName = "ConjuntoDeDatosCon1000000abejas.txt";
+    for (std::string inFileName : files) {
+        // map trepresent cubes
+        boost::unordered_map<std::string, Pair> cubes;
 
-    parse_file(inFileName, keys, cubes);
+        // vector to store keys and int representing how many bees are in each cube
+        std::vector<std::string> keys;
+        keys.reserve(500000);
 
-    auto st = std::chrono::high_resolution_clock::now();
-    clock_t start, end;
-    start = std::clock();
-    std::string key;
-    Pair* p;
-#pragma omp parallel for private(key, p, tony)
-    for (int i = 0; i < keys.size(); i++) {
-        key = keys[i];
-        p = &cubes[key];
-        tony = &p->first;
-        if (p->second == true) {
-            resultant_blist.concatenate_beelist_end(tony);
-        } else {
-            //std::cout << "UNICASSSS\n\n\n";
-            find_for_unique_bee(key, cubes);
+        auto duration_mean = std::chrono::system_clock::duration::zero().count();
+        auto duration_max = std::chrono::system_clock::duration::min().count();
+        auto duration_min = std::chrono::system_clock::duration::max().count();
+        for (int i = 0; i < 50; ++i) {
+            auto st = std::chrono::high_resolution_clock::now();
+            parse_file(inFileName, keys, cubes);
+
+            auto stop1 = std::chrono::high_resolution_clock::now();
+            auto dif = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - st).count();
+            if (dif > duration_max) {
+                duration_max = dif;
+            } else if (dif < duration_min) {
+                duration_min = dif;
+            }
+            duration_mean += dif;
         }
-    }
-    end = std::clock();
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - st);
+        //    clock_t start, end;
+        std::cout << "PARSE_FILE - " << inFileName << " "
+                  << "mean: " << duration_mean / 50 << std::endl;
+        std::cout << "PARSE_FILE - " << inFileName << " "
+                  << "max: " << duration_max << std::endl;
+        std::cout << "PARSE_FILE - " << inFileName << " "
+                  << "min: " << duration_min << std::endl;
 
-    std::cout << "CHRONO: " << duration.count() << "\n";
-    //std::cout << s.str();
-    double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-    std::cout << "CLOCK: " << time_taken << "\n";
-    //std::cout << s.str() << "\n";
+        duration_mean = std::chrono::system_clock::duration::zero().count();
+        duration_max = std::chrono::system_clock::duration::min().count();
+        duration_min = std::chrono::system_clock::duration::max().count();
+        for (int i = 0; i < 50; ++i) {
+            auto st = std::chrono::high_resolution_clock::now();
+            std::string key;
+            Pair* p;
+            //#pragma omp parallel for private(key, p, tony)
+            for (int i = 0; i < keys.size(); i++) {
+                key = keys[i];
+                p = &cubes[key];
+                tony = &p->first;
+                if (p->second == true) {
+                    resultant_blist.concatenate_beelist_end(tony);
+                } else {
+                    //std::cout << "UNICASSSS\n\n\n";
+                    find_for_unique_bee(key, cubes);
+                }
+            }
+            auto stop1 = std::chrono::high_resolution_clock::now();
+            auto dif = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - st).count();
+            if (dif > duration_max) {
+                duration_max = dif;
+            } else if (dif < duration_min) {
+                duration_min = dif;
+            }
+            duration_mean += dif;
+        }
+        std::cout << "FIND_COLLISIONS - " << inFileName << " "
+                  << "mean: " << duration_mean / 50 << std::endl;
+        std::cout << "FIND_COLLISIONS - " << inFileName << " "
+                  << "max: " << duration_max << std::endl;
+        std::cout << "FIND_COLLISIONS - " << inFileName << " "
+                  << "min: " << duration_min << std::endl;
+    }
 }
