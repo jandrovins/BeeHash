@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-#include <fstram>
 
 /*class Bee - representation of the data to be analysed
  */
