@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
 #include <chrono>
@@ -97,11 +98,8 @@ inline void parse_file(std::string input_file, std::vector<std::string>& v, boos
         Pair* p;
         while (std::getline(inpp, line)) {
             std::vector<std::string> string_coordinates;
-            //The data from the file is split and stored in the previously declared vector.
             boost::split(string_coordinates, line, boost::is_any_of(","));
-            //A new bee is created using the extracted coordinates.
             Bee* c = new Bee(std::stod(string_coordinates[0]), std::stod(string_coordinates[1]), std::stod(string_coordinates[2]));
-            //The coordinates assigned to the generated bee are used to generate a key in order to store said bee in the unordered map.
             std::string key = find_cube_key(c->x, c->y, c->z);
             p = &um[key];
             if ((p->first.first) == nullptr) {
@@ -172,6 +170,7 @@ void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::s
     std::vector<std::string> xyz_from_key;
     boost::split(xyz_from_key, unique_bee_key, boost::is_any_of(" "));
     int x_idx = stoi(xyz_from_key[0]), y_idx = stoi(xyz_from_key[1]), z_idx = stoi(xyz_from_key[2]);
+
     std::vector<std::string> keys;
     keys.reserve(32);
     keys.assign(32, "");
@@ -272,7 +271,6 @@ int main()
 
     std::vector<std::string> files = { "ConjuntoDeDatosCon1000000abejas.txt", "ConjuntoDeDatosCon100000abejas.txt", "ConjuntoDeDatosCon150000abejas.txt", "ConjuntoDeDatosCon1500abejas.txt" };
     // string storing name of file that will be parsed
-    for (std::string inFileName : files) {
         // map trepresent cubes
         boost::unordered_map<std::string, Pair> cubes;
 
@@ -283,6 +281,9 @@ int main()
         auto duration_mean = std::chrono::system_clock::duration::zero().count();
         auto duration_max = std::chrono::system_clock::duration::min().count();
         auto duration_min = std::chrono::system_clock::duration::max().count();
+        std::string inFileName;
+        std::cout<<"Enter file name: ";
+        std::cin>>inFileName;
         for (int i = 0; i < 100; ++i) {
             auto st = std::chrono::high_resolution_clock::now();
             parse_file(inFileName, keys, cubes);
@@ -338,5 +339,4 @@ int main()
                   << "max: " << duration_max << std::endl;
         std::cout << "FIND_COLLISIONS - " << inFileName << " "
                   << "min: " << duration_min << std::endl;
-    }
 }

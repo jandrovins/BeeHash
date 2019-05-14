@@ -1,3 +1,8 @@
+bin
+colisiones.txt
+compile_commands.json
+test
+
 # Prerequisites
 *.d
 
