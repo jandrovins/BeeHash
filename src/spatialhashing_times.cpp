@@ -271,7 +271,6 @@ int main()
 
     std::vector<std::string> files = { "ConjuntoDeDatosCon1000000abejas.txt", "ConjuntoDeDatosCon100000abejas.txt", "ConjuntoDeDatosCon150000abejas.txt", "ConjuntoDeDatosCon1500abejas.txt" };
     // string storing name of file that will be parsed
-    for (std::string inFileName : files) {
         // map trepresent cubes
         boost::unordered_map<std::string, Pair> cubes;
 
@@ -282,6 +281,9 @@ int main()
         auto duration_mean = std::chrono::system_clock::duration::zero().count();
         auto duration_max = std::chrono::system_clock::duration::min().count();
         auto duration_min = std::chrono::system_clock::duration::max().count();
+        std::string inFileName;
+        std::cout<<"Enter file name: ";
+        std::cin>>inFileName;
         for (int i = 0; i < 100; ++i) {
             auto st = std::chrono::high_resolution_clock::now();
             parse_file(inFileName, keys, cubes);
@@ -337,5 +339,4 @@ int main()
                   << "max: " << duration_max << std::endl;
         std::cout << "FIND_COLLISIONS - " << inFileName << " "
                   << "min: " << duration_min << std::endl;
-    }
 }
