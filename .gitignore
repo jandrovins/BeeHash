@@ -35,3 +35,5 @@ test
 *.exe
 *.out
 *.app
+
+bin

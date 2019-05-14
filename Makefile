@@ -4,9 +4,9 @@ BIN=bin
 OBJ=$(BIN)/obj
 CXXFLAGS=-Ofast
 CXX=g++
+TSL_LIBRARY_DIR=/home/vincent/SOURCE/robin-map/include/
 
 all: $(BIN)/spatialhashing $(BIN)/spatialhashing_times
-
 $(BIN)/spatialhashing: $(SRC)/spatialhashing.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
