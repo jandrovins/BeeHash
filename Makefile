@@ -4,13 +4,21 @@ BIN=bin
 OBJ=$(BIN)/obj
 CXXFLAGS=-Ofast
 CXX=g++
-TSL_LIBRARY_DIR=/home/vincent/SOURCE/robin-map/include/
+MKDIR=mkdir -p
+MV=mv
 
-all: $(BIN)/spatialhashing $(BIN)/spatialhashing_times
-$(BIN)/spatialhashing: $(SRC)/spatialhashing.cpp
+all: $(BIN)/beehash_all_times $(BIN)/beehash_single_dataset_times $(BIN)/beehash
+
+$(BIN)/beehash_all_times: $(SRC)/beehash_all_times.cpp
+	$(MKDIR) $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(BIN)/spatialhashing_times: $(SRC)/spatialhashing_times.cpp
+$(BIN)/beehash_single_dataset_times: $(SRC)/beehash_single_dataset_times.cpp
+	$(MKDIR) $(BIN)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(BIN)/beehash: $(SRC)/beehash.cpp
+	$(MKDIR) $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 .PHONY: clean
