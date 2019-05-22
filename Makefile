@@ -17,10 +17,6 @@ $(BIN)/beehash_single_dataset_times: $(SRC)/beehash_single_dataset_times.cpp
 	$(MKDIR) $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(BIN)/beehash: $(SRC)/beehash.cpp
-	$(MKDIR) $(BIN)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
 .PHONY: clean
 clean:
 	rm -rf $(BIN)
