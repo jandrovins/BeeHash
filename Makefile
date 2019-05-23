@@ -7,7 +7,7 @@ CXX=g++
 MKDIR=mkdir -p
 MV=mv
 
-all: $(BIN)/beehash_all_times $(BIN)/beehash_single_dataset_times $(BIN)/beehash
+all: $(BIN)/beehash_all_times $(BIN)/beehash_single_dataset_times
 
 $(BIN)/beehash_all_times: $(SRC)/beehash_all_times.cpp
 	$(MKDIR) $(BIN)
