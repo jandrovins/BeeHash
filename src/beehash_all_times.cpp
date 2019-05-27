@@ -38,32 +38,37 @@ public:
 
     void add_bee(Bee* b)
     {
-        first->previous = b;
-        b->following = first;
-        first = b;
-        ++size;
+        b->previous = nullptr;
+        b->following = this->first;
+        if (this->first != nullptr) {
+            this->first->previous = b;
+            this->last = this->first;
+        }
+        this->first = b;
+        this->size++;
     }
 
     void add_first_bee(Bee* b)
     {
         b->following = nullptr;
         b->previous = nullptr;
-        first = b;
-        last = b;
-        ++size;
+        this->first = b;
+        this->last = b;
+        this->size++;
     }
 
     void concatenate_beelist_end(BeeList* bl)
     {
-        if (first == nullptr) {
-            first = bl->first;
-            last = bl->last;
-            return;
+        if (this->size == 0) {
+            this->first = bl->first;
+            this->last = bl->last;
+            this->size = bl->size;
+        } else {
+            bl->first->previous = this->last;
+            last->following = bl->first;
+            this->last = bl->last;
+            this->size += bl->size;
         }
-        bl->first->previous = last;
-        last->following = bl->first;
-        last = bl->last;
-        size += bl->size;
     }
 };
 
@@ -106,7 +111,7 @@ inline void parse_file(std::string input_file, std::vector<std::string>& v, boos
             //The coordinates assigned to the generated bee are used to generate a key in order to store said bee in the unordered map.
             std::string key = find_cube_key(c->x, c->y, c->z);
             p = &um[key];
-            if ((p->first.first) == nullptr) {
+            if ((p->first.size) == 0) {
                 p->first.add_first_bee(c);
                 p->second = false;
                 v.push_back(key);
@@ -128,33 +133,33 @@ inline bool compare_adjacent(std::string adj_key, std::string unique_bee_key, bo
     for (int i = 0; i < 26; ++i) {
         p = &cubes[adj_key];
         blist = &p->first;
-        if (blist->size != 0)
-            if (blist->first != nullptr) {
-                current_bee = blist->first;
-                double x_distance, y_distance, z_distance;
-                do {
-                    x_distance = x - current_bee->x;
-                    if (x_distance >= -100 && x_distance <= 100) {
-                        y_distance = y - current_bee->y;
-                        if (y_distance >= -100 && y_distance <= 100) {
-                            z_distance = z - current_bee->z;
-                            if (z_distance >= -100 && z_distance <= 100) {
-                                if (p->second == true) {
-                                    cubes[unique_bee_key].second = true;
-                                    resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
-                                    return true; 
-                                } else {
-                                    p->second = true;
-                                    cubes[unique_bee_key].second = true;
-                                    resultant_blist.concatenate_beelist_end(blist);
-                                    resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
-                                    return true; 
-                                }
+        if (blist->first != nullptr) {
+            current_bee = blist->first;
+            double x_distance, y_distance, z_distance;
+            while (current_bee != nullptr) {
+                x_distance = x - current_bee->x;
+                if (x_distance >= -100 && x_distance <= 100) {
+                    y_distance = y - current_bee->y;
+                    if (y_distance >= -100 && y_distance <= 100) {
+                        z_distance = z - current_bee->z;
+                        if (z_distance >= -100 && z_distance <= 100) {
+                            if (p->second == true) {
+                                cubes[unique_bee_key].second = true;
+                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
+                                return true;
+                            } else {
+                                p->second = true;
+                                cubes[unique_bee_key].second = true;
+                                //resultant_blist.concatenate_beelist_end(blist);
+                                resultant_blist.concatenate_beelist_end(&cubes[unique_bee_key].first);
+                                return true;
                             }
                         }
                     }
-                } while (current_bee->following != nullptr && current_bee != blist->first);
+                }
+                current_bee = current_bee->following;
             }
+        }
     }
     return false;
 }
@@ -256,6 +261,27 @@ void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::s
     if (compare_adjacent(((((std::to_string(x_idx - 1) += " ") += std::to_string(y_idx - 1)) += " ") += std::to_string(z_idx - 1)), unique_bee_key, cubes, x, y, z)) {
         return;
     }
+
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx + 2)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx - 2)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx + 2)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx) += " ") += std::to_string(y_idx - 2)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+
+    if (compare_adjacent(((((std::to_string(x_idx + 2) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
+    if (compare_adjacent(((((std::to_string(x_idx - 2) += " ") += std::to_string(y_idx)) += " ") += std::to_string(z_idx)), unique_bee_key, cubes, x, y, z)) {
+        return;
+    }
 }
 
 BeeList* tony;
@@ -264,7 +290,7 @@ double x, y, z;
 int main()
 {
 
-    std::vector<std::string> files = { "1500beesSet.txt", "150000beesSet.txt", "100000beesSet.txt", "1000000beesSet.txt" };
+    std::vector<std::string> files = { "1500beesSet.csv", "150000beesSet.csv   ", "100000beesSet.csv   ", "1000000beesSet.csv  " };
     // string storing name of file that will be parsed
     for (std::string inFileName : files) {
 	inFileName = "../datasets/" + inFileName;

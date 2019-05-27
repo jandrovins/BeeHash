@@ -1,14 +1,13 @@
-#include <bits/stdc++.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
 #include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <malloc.h>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <malloc.h>
 
 class Bee {
 public:
@@ -287,58 +286,41 @@ void find_for_unique_bee(std::string unique_bee_key, boost::unordered_map<std::s
 
 BeeList* tony;
 double x, y, z;
+boost::unordered_map<std::string, Pair> cubes;
 
 int main()
 {
+    std::string inFileName, nbees;
+    std::cout << "Enter the number of bees: ";
+    std::cin >> nbees;
+    inFileName = "../datasets/" + nbees + "beesSet.csv";
+    // map trepresent cubes
 
-        // map trepresent cubes
-        boost::unordered_map<std::string, Pair> cubes;
+    // vector to store keys and int representing how many bees are in each cube
+    std::vector<std::string> keys;
+    keys.reserve(700000);
 
-        // vector to store keys and int representing how many bees are in each cube
-        std::vector<std::string> keys;
-        keys.reserve(500000);
+    parse_file(inFileName, keys, cubes);
 
-        auto duration_mean = std::chrono::system_clock::duration::zero().count();
-        auto duration_max = std::chrono::system_clock::duration::min().count();
-        auto duration_min = std::chrono::system_clock::duration::max().count();
-        std::string inFileName;
-        std::cout<<"Enter file name: ";
-        std::cin>>inFileName;
-	inFileName = "../datasets/" + inFileName;
-            auto st = std::chrono::high_resolution_clock::now();
-            parse_file(inFileName, keys, cubes);
-
-            auto stop1 = std::chrono::high_resolution_clock::now();
-            auto dif = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - st).count();
-        std::cout << "PARSE_FILE - " << inFileName << " "
-                  << "mean: " << dif << " microseconds" << std::endl;
-        std::cout << "PARSE_FILE - " << inFileName << " "
-                  << "max: " << dif << " microseconds" << std::endl;
-        std::cout << "PARSE_FILE - " << inFileName << " "
-                  << "min: " << dif << " microseconds" << std::endl;
-
-        duration_mean = std::chrono::system_clock::duration::zero().count();
-        duration_max = std::chrono::system_clock::duration::min().count();
-        duration_min = std::chrono::system_clock::duration::max().count();
-            st = std::chrono::high_resolution_clock::now();
-            std::string key;
-            Pair* p;
-            for (int i = 0; i < keys.size(); i++) {
-                key = keys[i];
-                p = &cubes[key];
-                tony = &p->first;
-                if (p->second == true) {
-                    resultant_blist.concatenate_beelist_end(tony);
-                } else {
-                    find_for_unique_bee(key, cubes);
-                }
-            }
-             stop1 = std::chrono::high_resolution_clock::now();
-            dif = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - st).count();
-        std::cout << "FIND_COLLISIONS - " << inFileName << " "
-                  << "mean: " << dif << " microseconds" << std::endl;
-        std::cout << "FIND_COLLISIONS - " << inFileName << " "
-                  << "max: " << dif << " microseconds" << std::endl;
-        std::cout << "FIND_COLLISIONS - " << inFileName << " "
-                  << "min: " << dif << " microseconds" << std::endl;
+    std::string key;
+    Pair* p;
+    for (int i = 0; i < keys.size(); i++) {
+        key = keys[i];
+        p = &cubes[key];
+        tony = &p->first;
+        if (p->second == true) {
+            resultant_blist.concatenate_beelist_end(tony);
+        } else {
+            find_for_unique_bee(key, cubes);
+        }
+    }
+    Bee* b = resultant_blist.first;
+    std::ofstream outFile(nbees + "out.csv");
+    std::stringstream s;
+    while (b != nullptr) {
+        s << b->x/111111 << "," << b->y/111111 << "," << b->z << std::endl;
+        b = b->following;
+    }
+    outFile << s.rdbuf();
+    outFile.close();
 }
