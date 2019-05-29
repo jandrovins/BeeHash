@@ -8,7 +8,7 @@ MKDIR=mkdir -p
 MV=mv
 CP=cp
 
-all: $(BIN)/create_pcd $(BIN)/beehash $(BIN)/beehash_all_times $(BIN)/beehash_single_dataset_times $(BIN)/open3d_visualize
+all: $(BIN)/beehash_no_string #$(BIN)/create_pcd $(BIN)/beehash $(BIN)/beehash_all_times $(BIN)/beehash_single_dataset_times $(BIN)/open3d_visualize
 
 $(BIN)/beehash_all_times: $(SRC)/beehash_all_times.cpp
 	$(MKDIR) $(BIN)
@@ -19,6 +19,10 @@ $(BIN)/beehash_single_dataset_times: $(SRC)/beehash_single_dataset_times.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(BIN)/beehash: $(SRC)/beehash.cpp
+	$(MKDIR) $(BIN)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(BIN)/beehash_no_string: $(SRC)/beehash_no_string.cpp
 	$(MKDIR) $(BIN)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
